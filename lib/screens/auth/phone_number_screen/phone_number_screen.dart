@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:medichat/core/constant/custom_text/custom_text.dart';
 import 'package:medichat/core/utils/color_utils/app_colors.dart';
+import 'package:medichat/core/utils/custom_button/custom_button.dart';
 
 class PhoneNumberScreen extends StatelessWidget {
   const PhoneNumberScreen({super.key});
@@ -12,40 +14,118 @@ class PhoneNumberScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 100),
+
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomText(
                     text: 'Enter your phone number',
-                    style: apptextTheme.bodyLarge,
+                    style: apptextTheme.bodyLarge?.copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                  SizedBox(width: 20),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.more_vert),
+                  ),
                 ],
               ),
-              RichText(
-                selectionColor: AppColors.blackTextClr,
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: TextStyle(color: AppColors.blackTextClr),
-                  children: [
-                    TextSpan(
-                      text: "WhatsApp will need to verify your phone number.",
-                      style: apptextTheme.titleSmall,
+
+              SizedBox(height: 15),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: TextStyle(color: AppColors.blackTextClr),
+                    children: [
+                      TextSpan(
+                        text: "WhatsApp will need to verify your phone number.",
+                        style: apptextTheme.titleSmall,
+                      ),
+                      TextSpan(
+                        text: "What's my number?",
+                        style: apptextTheme.titleSmall?.copyWith(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 20),
+
+              SizedBox(
+                width: double.infinity,
+                child: InternationalPhoneNumberInput(
+                  onInputChanged: (value) {},
+                  selectorConfig: SelectorConfig(
+                    leadingPadding: 10,
+                    showFlags: true,
+                    trailingSpace: false,
+                    useBottomSheetSafeArea: true,
+                    selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                    setSelectorButtonAsPrefixIcon: false,
+                  ),
+                  initialValue: PhoneNumber(),
+                  ignoreBlank: true,
+                  textStyle: TextStyle(fontSize: 16, color: Colors.black),
+                  inputDecoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 12,
                     ),
-                    TextSpan(
-                      text: "What’s  my number?",
-                      style: apptextTheme.titleSmall?.copyWith(
-                        color: AppColors.blackTextClr,
+                    hintText: "111 222 3344",
+                    hintStyle: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey.shade400,
+                    ),
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey.shade400,
+                        width: 1.5,
                       ),
                     ),
-                  ],
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey.shade400,
+                        width: 1.5,
+                      ),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue, width: 2),
+                    ),
+                  ),
+                  selectorTextStyle: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
                 ),
+              ),
+
+              SizedBox(height: 15),
+
+              Center(
+                child: CustomText(
+                  text: 'Carrier charges may apply',
+                  style: apptextTheme.titleSmall?.copyWith(fontSize: 13),
+                ),
+              ),
+              Spacer(),
+
+              Padding(
+                padding: const EdgeInsets.only(bottom: 120.0),
+                child: CustomButton(text: 'NEXT', onPressed: () {}),
               ),
             ],
           ),

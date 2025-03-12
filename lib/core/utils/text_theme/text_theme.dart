@@ -52,7 +52,7 @@ class AppTheme {
         ),
         titleSmall: const TextStyle(
           fontSize: 10.0,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           color: AppColors.blackTextClr,
         ),
 
