@@ -11,42 +11,44 @@ class PhoneNumberScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(height: 100),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CustomText(
-                  text: 'Enter your phone number',
-                  style: apptextTheme.bodyLarge,
-                ),
-                SizedBox(width: 20),
-                IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
-              ],
-            ),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                style: apptextTheme.labelSmall,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              SizedBox(height: 100),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  TextSpan(
-                    text: "WhatsApp will need to verify your phone number.",
-                    style: apptextTheme.bodySmall?.copyWith(
-                      color: AppColors.blackTextClr,
-                    ),
+                  CustomText(
+                    text: 'Enter your phone number',
+                    style: apptextTheme.bodyLarge,
                   ),
-                  TextSpan(
-                    text: "What’s  my number?",
-                    style: apptextTheme.bodyMedium?.copyWith(
-                      color: AppColors.blackTextClr,
-                    ),
-                  ),
+                  SizedBox(width: 20),
+                  IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
                 ],
               ),
-            ),
-          ],
+              RichText(
+                selectionColor: AppColors.blackTextClr,
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: TextStyle(color: AppColors.blackTextClr),
+                  children: [
+                    TextSpan(
+                      text: "WhatsApp will need to verify your phone number.",
+                      style: apptextTheme.titleSmall,
+                    ),
+                    TextSpan(
+                      text: "What’s  my number?",
+                      style: apptextTheme.titleSmall?.copyWith(
+                        color: AppColors.blackTextClr,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
