@@ -9,7 +9,6 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final apptextTheme = Theme.of(context).textTheme;
 
     return DefaultTabController(
       length: 3,
