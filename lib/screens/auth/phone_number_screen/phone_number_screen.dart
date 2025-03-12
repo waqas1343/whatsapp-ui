@@ -41,24 +41,20 @@ class PhoneNumberScreen extends StatelessWidget {
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: TextStyle(color: AppColors.blackTextClr),
-                    children: [
-                      TextSpan(
-                        text: "WhatsApp will need to verify your phone number.",
-                        style: apptextTheme.titleSmall,
+                child: Column(
+                  children: [
+                    CustomText(
+                      text: "WhatsApp will need to verify your phone number.",
+                      style: apptextTheme.labelSmall,
+                    ),
+                    CustomText(
+                      text: "What's my number?",
+                      style: apptextTheme.titleSmall?.copyWith(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w600,
                       ),
-                      TextSpan(
-                        text: "What's my number?",
-                        style: apptextTheme.titleSmall?.copyWith(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -78,38 +74,38 @@ class PhoneNumberScreen extends StatelessWidget {
                   ),
                   initialValue: PhoneNumber(),
                   ignoreBlank: true,
-                  textStyle: TextStyle(fontSize: 16, color: Colors.black),
+                  textStyle: apptextTheme.bodyLarge,
                   inputDecoration: InputDecoration(
                     isDense: true,
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 14,
                       horizontal: 12,
                     ),
-                    hintText: "111 222 3344",
+                    hintText: "347 580 5904",
                     hintStyle: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey.shade400,
+                      color: AppColors.textColorGrey,
                     ),
                     border: UnderlineInputBorder(
                       borderSide: BorderSide(
-                        color: Colors.grey.shade400,
+                        color: AppColors.textColorGrey,
                         width: 1.5,
                       ),
                     ),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
-                        color: Colors.grey.shade400,
+                        color: AppColors.textColorGrey,
                         width: 1.5,
                       ),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue, width: 2),
+                      borderSide: BorderSide(
+                        color: AppColors.appColorG,
+                        width: 2,
+                      ),
                     ),
                   ),
-                  selectorTextStyle: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),
+                  selectorTextStyle: apptextTheme.bodyLarge,
                 ),
               ),
 
@@ -118,7 +114,7 @@ class PhoneNumberScreen extends StatelessWidget {
               Center(
                 child: CustomText(
                   text: 'Carrier charges may apply',
-                  style: apptextTheme.titleSmall?.copyWith(fontSize: 13),
+                  style: apptextTheme.titleSmall,
                 ),
               ),
               Spacer(),
