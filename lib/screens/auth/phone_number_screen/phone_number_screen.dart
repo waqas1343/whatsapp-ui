@@ -3,6 +3,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:medichat/core/constant/custom_text/custom_text.dart';
 import 'package:medichat/core/utils/color_utils/app_colors.dart';
 import 'package:medichat/core/utils/custom_button/custom_button.dart';
+import 'package:medichat/screens/auth/otpScreen/otp_screen.dart';
 
 class PhoneNumberScreen extends StatelessWidget {
   const PhoneNumberScreen({super.key});
@@ -121,7 +122,15 @@ class PhoneNumberScreen extends StatelessWidget {
 
               Padding(
                 padding: const EdgeInsets.only(bottom: 120.0),
-                child: CustomButton(text: 'NEXT', onPressed: () {}),
+                child: CustomButton(
+                  text: 'NEXT',
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => OtpScreen()),
+                    );
+                  },
+                ),
               ),
             ],
           ),

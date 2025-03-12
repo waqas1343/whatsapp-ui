@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:medichat/core/utils/custom_button/custom_button.dart';
+import 'package:pinput/pinput.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../widgets/customOtpScreen/custom_otp.dart';
-
 class OtpScreen extends StatelessWidget {
-  const OtpScreen({super.key});
+  final defaultPinTheme = PinTheme(
+    width: 14.w,
+    height: 10.h,
+    textStyle: TextStyle(
+      fontSize: 20,
+      color: Colors.black,
+      fontWeight: FontWeight.w600,
+    ),
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.grey),
+      borderRadius: BorderRadius.circular(20),
+    ),
+  );
+  OtpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +34,16 @@ class OtpScreen extends StatelessWidget {
                 style: apptextTheme.bodyLarge,
               ),
               SizedBox(height: 8.h),
-              CustomOtp(keyboardtype: TextInputType.number),
+              Pinput(
+                length: 4,
+                defaultPinTheme: defaultPinTheme,
+                focusedPinTheme: defaultPinTheme.copyWith(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
               SizedBox(height: 8.h),
               RichText(
                 text: TextSpan(

@@ -4,6 +4,8 @@ import 'package:medichat/core/utils/color_utils/app_colors.dart';
 import 'package:medichat/core/utils/custom_button/custom_button.dart';
 import 'package:sizer/sizer.dart';
 
+import '../phone_number_screen/phone_number_screen.dart';
+
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
@@ -73,7 +75,17 @@ class WelcomeScreen extends StatelessWidget {
 
               SizedBox(height: 6.h),
 
-              CustomButton(text: 'AGREE AND CONTINUE', onPressed: () {}),
+              CustomButton(
+                text: 'AGREE AND CONTINUE',
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PhoneNumberScreen(),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),
