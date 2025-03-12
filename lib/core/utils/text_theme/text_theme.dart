@@ -37,7 +37,7 @@ class AppTheme {
         headlineSmall: const TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.w600,
-          color: AppColors.textColor,
+          color: AppColors.appBackground,
         ),
 
         titleLarge: TextStyle(
@@ -63,8 +63,8 @@ class AppTheme {
         ),
         bodyMedium: const TextStyle(
           fontSize: 14.0,
-          fontWeight: FontWeight.w500,
-          color: AppColors.textColor,
+          fontWeight: FontWeight.w600,
+          color: AppColors.appBackground,
         ),
         bodySmall: const TextStyle(
           fontSize: 12.0,
@@ -152,8 +152,8 @@ class AppTheme {
         ),
         bodyMedium: TextStyle(
           fontSize: 14.0,
-          fontWeight: FontWeight.w500,
-          color: AppColors.whiteTextClr,
+          fontWeight: FontWeight.w700,
+          color: AppColors.blackTextClr,
         ),
         bodySmall: TextStyle(
           fontSize: 12.0,
