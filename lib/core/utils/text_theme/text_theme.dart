@@ -84,7 +84,7 @@ class AppTheme {
         ),
         labelSmall: TextStyle(
           fontSize: 10.0,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           color: AppColors.blackTextClr,
         ),
       ),
@@ -141,7 +141,7 @@ class AppTheme {
         ),
         titleSmall: TextStyle(
           fontSize: 14.0,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           color: AppColors.whiteTextClr,
         ),
 
@@ -173,8 +173,8 @@ class AppTheme {
         ),
         labelSmall: TextStyle(
           fontSize: 10.0,
-          fontWeight: FontWeight.w500,
-          color: AppColors.textColor,
+          fontWeight: FontWeight.w700,
+          color: AppColors.appBackground,
         ),
       ),
     );
