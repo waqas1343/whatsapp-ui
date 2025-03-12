@@ -23,7 +23,7 @@ class CustomOtp extends StatelessWidget {
                 },
                 child: Consumer<OptHoverProvider>(
                   builder: (context, hover, child) {
-                    return Container(
+                    return SizedBox(
                       width: 18.w,
                       height: 10.h,
                       child: TextField(
