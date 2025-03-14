@@ -6,6 +6,8 @@ import 'package:pinput/pinput.dart';
 import 'package:sizer/sizer.dart';
 import 'package:provider/provider.dart';
 
+import '../../home/whatsapp_dashboard_screen/dashboard_screen.dart';
+
 class OtpScreen extends StatelessWidget {
   final String phoneNumber;
 
@@ -88,6 +90,7 @@ class OtpScreen extends StatelessWidget {
               ),
               SizedBox(height: 20.h),
               CustomButton(
+
                 text: otpController.isLoading ? "Verifying..." : "Verify",
                 onPressed:
                     otpController.isLoading
@@ -104,6 +107,15 @@ class OtpScreen extends StatelessWidget {
                             );
                           }
                         },
+
+                text: "Verify",
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => DashboardScreen()),
+                  );
+                },
+
               ),
             ],
           ),
