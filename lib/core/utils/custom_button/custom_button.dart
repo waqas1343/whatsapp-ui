@@ -3,7 +3,7 @@ import 'package:medichat/core/utils/color_utils/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed; // ✅ Nullable banaya
   final Color color;
   final Color textColor;
   final double borderRadius;
@@ -13,7 +13,7 @@ class CustomButton extends StatelessWidget {
   const CustomButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed, // ✅ Nullable
     this.color = AppColors.appColorG,
     this.textColor = Colors.black,
     this.borderRadius = 8.0,
@@ -24,12 +24,12 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: onPressed != null ? () => onPressed!() : null, // ✅ Null check
       child: Container(
         height: height,
         width: width,
         decoration: BoxDecoration(
-          color: color,
+          color: onPressed != null ? color : Colors.grey, // ✅ Disabled color
           borderRadius: BorderRadius.circular(borderRadius),
         ),
         alignment: Alignment.center,
