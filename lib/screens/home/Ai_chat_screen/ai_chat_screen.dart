@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medichat/core/utils/color_utils/app_colors.dart';
+import 'package:medichat/screens/home/whatsapp_dashboard_screen/dashboard_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:medichat/providers/controllers/ai_chat_provider/ai_chat_provider.dart';
 import 'package:sizer/sizer.dart';
@@ -15,6 +16,15 @@ class AiChatScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => DashboardScreen()),
+            );
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
         title: Text(
           "Created By WAQAS",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
