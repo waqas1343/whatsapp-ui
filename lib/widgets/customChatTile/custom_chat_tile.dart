@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+
+
 import 'package:medichat/core/utils/text_theme/text_theme.dart';
 import 'package:sizer/sizer.dart';
+
 
 class CustomChatTile extends StatelessWidget {
   final String profileImage;

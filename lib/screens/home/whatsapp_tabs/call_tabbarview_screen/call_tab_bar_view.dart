@@ -7,7 +7,9 @@ class CallTabBarView extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: Colors.brown,
-      body: Center(child: Text('CALL')),
+      body: Column(
+        
+      ),
     );
   }
 }
