@@ -3,6 +3,8 @@ import 'package:medichat/core/utils/custom_button/custom_button.dart';
 import 'package:pinput/pinput.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../home/whatsapp_dashboard_screen/dashboard_screen.dart';
+
 class OtpScreen extends StatelessWidget {
   final defaultPinTheme = PinTheme(
     width: 14.w,
@@ -47,7 +49,7 @@ class OtpScreen extends StatelessWidget {
               SizedBox(height: 8.h),
               RichText(
                 text: TextSpan(
-                  style: apptextTheme.headlineSmall,
+                  style: apptextTheme.titleMedium,
                   children: [
                     TextSpan(text: "Resend Code in "),
                     TextSpan(
@@ -56,12 +58,20 @@ class OtpScreen extends StatelessWidget {
                         color: Colors.lightGreen,
                       ),
                     ),
-                    TextSpan(text: " s", style: apptextTheme.headlineSmall),
+                    TextSpan(text: " s", style: apptextTheme.titleMedium),
                   ],
                 ),
               ),
               SizedBox(height: 20.h),
-              CustomButton(text: "Verify", onPressed: () {}),
+              CustomButton(
+                text: "Verify",
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => DashboardScreen()),
+                  );
+                },
+              ),
             ],
           ),
         ),
