@@ -1,127 +1,128 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:medichat/providers/controllers/personalChat/personal_chat_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:sizer/sizer.dart';
-
-import '../../core/utils/color_utils/app_colors.dart';
+import 'package:medichat/providers/controllers/chat_provider/chat_provider.dart';
 
 class PersonalChat extends StatelessWidget {
   final String username;
   final String imageUrl;
-  const PersonalChat({
-    super.key,
+  final String receiverId;
+
+  PersonalChat({super.key, 
     required this.username,
     required this.imageUrl,
+    required this.receiverId,
   });
+
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    final pcp = Provider.of<PersonalChatProvider>(context);
-    TextEditingController messageController = TextEditingController();
-    final appTextTheme = Theme.of(context).textTheme;
+    final chatProvider = Provider.of<ChatProvider2>(context, listen: false);
+    final currentUser = chatProvider.auth.currentUser;
+
+   
+    if (currentUser == null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(username)),
+        body: Center(child: Text("User not logged in")),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(username, style: appTextTheme.headlineSmall),
-        backgroundColor: AppColors.appColorG,
-
-        leading: Padding(
-          padding: EdgeInsets.only(left: 2.w),
-          child: CircleAvatar(backgroundImage: AssetImage(imageUrl)),
+        title: Row(
+          children: [
+            CircleAvatar(backgroundImage: NetworkImage(imageUrl)),
+            SizedBox(width: 10),
+            Text(username),
+          ],
         ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.call, color: AppColors.appBackground),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.videocam, color: AppColors.appBackground),
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {},
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem(
-                  value: "View contact",
-                  child: Text("View Contact"),
-                ),
-                PopupMenuItem(
-                  value: "Media, links and docs",
-                  child: Text("Media, links and docs"),
-                ),
-                PopupMenuItem(value: "Search", child: Text("Search")),
-              ];
-            },
-            icon: Icon(Icons.more_vert, color: AppColors.appBackground),
-          ),
-        ],
       ),
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: pcp.messages.length,
-              itemBuilder: (context, index) {
-                final mess = pcp.messages[index];
-                return Align(
-                  alignment:
-                      mess["isMe"]
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    margin: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: mess["isMe"] ? Colors.blue[300] : Colors.grey,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(mess["text"], style: TextStyle(fontSize: 16)),
-                  ),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: chatProvider.getMessages(receiverId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text("No messages yet"));
+                }
+
+                return ListView.builder(
+                  controller: _scrollController,
+                  reverse: true,
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    final data =
+                        snapshot.data!.docs[index].data()
+                            as Map<String, dynamic>;
+                    final isMe = data['senderId'] == currentUser.uid;
+
+                    return Align(
+                      alignment:
+                          isMe ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        margin: EdgeInsets.symmetric(
+                          vertical: 5,
+                          horizontal: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isMe ? Colors.blue[300] : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(data['text']),
+                      ),
+                    );
+                  },
                 );
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: messageController,
+          _buildMessageInput(chatProvider),
+        ],
+      ),
+    );
+  }
 
-                    decoration: InputDecoration(
-                      hintText: "Type a message...",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                  ),
+  Widget _buildMessageInput(ChatProvider2 chatProvider) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _messageController,
+              decoration: InputDecoration(
+                labelText: 'Type a message...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                SizedBox(width: 2.w),
-                Container(
-                  width: 10.w,
-                  height: 6.h,
-                  decoration: BoxDecoration(
-                    color: AppColors.appColorG,
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    onPressed: () {
-                      // pcp.sendmessage("hello! Bhai");
-                      // Provider.of<PersonalChatProvider>(
-                      //   context,
-                      //   listen: false,
-                      // ).sendmessage(message);
-                      if (messageController.text.isNotEmpty) {
-                        pcp.sendmessage(messageController.text);
-                        messageController.clear();
-                      }
-                    },
-                    icon: Icon(Icons.send, color: Colors.white),
-                  ),
-                ),
-              ],
+              ),
             ),
+          ),
+          SizedBox(width: 10),
+          IconButton(
+            icon: Icon(Icons.send, color: Colors.blue),
+            onPressed: () {
+              if (_messageController.text.isNotEmpty) {
+                chatProvider.sendMessage(receiverId, _messageController.text);
+                _messageController.clear();
+
+                Future.delayed(Duration(milliseconds: 300), () {
+                  _scrollController.animateTo(
+                    0.0,
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
+                  );
+                });
+              }
+            },
           ),
         ],
       ),

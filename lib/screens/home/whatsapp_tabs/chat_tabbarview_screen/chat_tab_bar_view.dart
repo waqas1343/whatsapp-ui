@@ -15,18 +15,18 @@ class ChatTabBarView extends StatelessWidget {
             CustomChatTile(
               profileImage: AppImages.waqasImage,
               name: 'Shahzaib',
-              lastMessage: "what are you doing?",
-              time: "5:27 am",
-              unreadCount: 3,
+              lastMessage: "Tap to chat",
+              time: "",
+              unreadCount: 0,
               ontap: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (context) => PersonalChat(
-                          username: 'Shahzaib',
-                          imageUrl: AppImages.waqasImage,
-                        ),
+                    builder: (context) => PersonalChat(
+                      username: 'Shahzaib',
+                      imageUrl: AppImages.waqasImage,
+                      receiverId: 'receiver_user_id',
+                    ),
                   ),
                 );
               },
