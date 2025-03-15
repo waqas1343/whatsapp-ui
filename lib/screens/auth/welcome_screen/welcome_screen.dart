@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:medichat/core/utils/app_images/app_images.dart';
 import 'package:medichat/core/utils/color_utils/app_colors.dart';
 import 'package:medichat/core/utils/custom_button/custom_button.dart';
+import 'package:medichat/screens/auth/phone_number_screen/phone_number_screen.dart';
 import 'package:sizer/sizer.dart';
-
-import '../phone_number_screen/phone_number_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
