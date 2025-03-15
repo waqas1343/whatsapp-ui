@@ -1,32 +1,13 @@
 {
   "project_info": {
-    "project_number": "5314711456",
-    "project_id": "chatee24fyp",
-    "storage_bucket": "chatee24fyp.firebasestorage.app"
+    "project_number": "559444074636",
+    "project_id": "medichat-a2965",
+    "storage_bucket": "medichat-a2965.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:5314711456:android:e10fd36816e5c7d3ee5ec5",
-        "android_client_info": {
-          "package_name": "com.example.chatee"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDmL_AdQTv1oPQn-_P1PoLVsIXmBBVHKNk"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:5314711456:android:9dbeadb741772616ee5ec5",
+        "mobilesdk_app_id": "1:559444074636:android:d43cac72f8a1b56dbf1ba9",
         "android_client_info": {
           "package_name": "com.example.medichat"
         }
@@ -34,64 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDmL_AdQTv1oPQn-_P1PoLVsIXmBBVHKNk"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:5314711456:android:30804c7e4d0aaf47ee5ec5",
-        "android_client_info": {
-          "package_name": "com.example.one_on_one_group_chat"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDmL_AdQTv1oPQn-_P1PoLVsIXmBBVHKNk"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:5314711456:android:ce669f102491d625ee5ec5",
-        "android_client_info": {
-          "package_name": "com.example.whatsapp_ui"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDmL_AdQTv1oPQn-_P1PoLVsIXmBBVHKNk"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:5314711456:android:2f00c254150eb328ee5ec5",
-        "android_client_info": {
-          "package_name": "com.example.whatsup"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDmL_AdQTv1oPQn-_P1PoLVsIXmBBVHKNk"
+          "current_key": "AIzaSyCUnVZl7bPnICndZEEkPkk98Y57zDk0uwY"
         }
       ],
       "services": {
