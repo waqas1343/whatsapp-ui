@@ -5,6 +5,9 @@ import 'package:medichat/screens/home/whatsapp_dashboard_screen/dashboard_screen
 import 'package:pinput/pinput.dart';
 import 'package:sizer/sizer.dart';
 
+import 'package:provider/provider.dart';
+
+
 class OtpScreen extends StatelessWidget {
   final TextEditingController otpController = TextEditingController();
   final String verficationId; // Fix: Correct spelling
@@ -54,6 +57,32 @@ class OtpScreen extends StatelessWidget {
               ),
               SizedBox(height: 8.h),
               CustomButton(
+
+                text: otpController.isLoading ? "Verifying..." : "Verify",
+                onPressed:
+                    otpController.isLoading
+                        ? null
+                        : () async {
+                          bool isVerified = await otpController.verifyOTP("");
+                          if (isVerified) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DashboardScreen(),
+                              ),
+                              (route) => false,
+                            );
+                          }
+                        },
+
+                // text: "Verify",
+                // onPressed: () {
+                //   Navigator.pushReplacement(
+                //     context,
+                //     MaterialPageRoute(builder: (context) => DashboardScreen()),
+                //   );
+                // },
+
                 text: 'Verify',
                 onPressed: () async {
                   try {
@@ -80,6 +109,7 @@ class OtpScreen extends StatelessWidget {
                     print("Error: $ex");
                   }
                 },
+
               ),
             ],
           ),
