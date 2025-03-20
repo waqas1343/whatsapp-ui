@@ -51,11 +51,11 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDmL_AdQTv1oPQn-_P1PoLVsIXmBBVHKNk',
-    appId: '1:5314711456:android:9dbeadb741772616ee5ec5',
-    messagingSenderId: '5314711456',
-    projectId: 'chatee24fyp',
-    storageBucket: 'chatee24fyp.firebasestorage.app',
+    apiKey: 'AIzaSyCUnVZl7bPnICndZEEkPkk98Y57zDk0uwY',
+    appId: '1:559444074636:android:d43cac72f8a1b56dbf1ba9',
+    messagingSenderId: '559444074636',
+    projectId: 'medichat-a2965',
+    storageBucket: 'medichat-a2965.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
