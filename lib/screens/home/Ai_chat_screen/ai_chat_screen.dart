@@ -72,7 +72,7 @@ class AiChatScreen extends StatelessWidget {
                             message["content"] ?? "",
                             style: TextStyle(
                               color: isUser ? Colors.white : Colors.black87,
-                              fontSize: 10.sp,
+                              fontSize: 14.sp,
                             ),
                           ),
                         ),

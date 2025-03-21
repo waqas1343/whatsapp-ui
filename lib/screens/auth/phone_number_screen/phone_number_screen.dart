@@ -18,17 +18,22 @@ class PhoneNumberScreen extends StatelessWidget {
       return;
     }
 
-    await FirebaseFirestore.instance.collection("users").doc(phoneNumber).set({
-      "phone": phoneNumber,
-      "createdAt": FieldValue.serverTimestamp(),
-    });
+    try {
+      await FirebaseFirestore.instance.collection("users").doc(phoneNumber).set(
+        {"phone": phoneNumber, "createdAt": FieldValue.serverTimestamp()},
+      );
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => OtpScreen(phoneNumber: phoneNumber),
-      ),
-    );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OtpScreen(phoneNumber: phoneNumber),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to save phone number: $e")),
+      );
+    }
   }
 
   @override
