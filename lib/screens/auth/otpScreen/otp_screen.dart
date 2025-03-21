@@ -1,37 +1,32 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:medichat/core/utils/custom_button/custom_button.dart';
-import 'package:medichat/screens/home/whatsapp_dashboard_screen/dashboard_screen.dart';
 import 'package:pinput/pinput.dart';
-import 'package:sizer/sizer.dart';
-
-import 'package:provider/provider.dart';
-
+import '../../../core/utils/custom_button/custom_button.dart';
+import '../../home/whatsapp_dashboard_screen/dashboard_screen.dart';
 
 class OtpScreen extends StatelessWidget {
   final TextEditingController otpController = TextEditingController();
-  final String verficationId; // Fix: Correct spelling
+  final FocusNode otpFocusNode = FocusNode();
+  final String phoneNumber;
 
-  OtpScreen({super.key, required this.verficationId});
+  OtpScreen({super.key, required this.phoneNumber}) {
+    otpController.text = "1234";
+  }
 
-  final defaultPinTheme = PinTheme(
-    width: 14.w,
-    height: 10.h,
-    textStyle: const TextStyle(
-      fontSize: 20,
-      color: Colors.black,
-      fontWeight: FontWeight.w600,
-    ),
-    decoration: BoxDecoration(
-      border: Border.all(color: Colors.grey),
-      borderRadius: BorderRadius.circular(20),
-    ),
-  );
+  void verifyOtp(BuildContext context) {
+    if (otpController.text.trim() == '1234') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Invalid OTP, please try again")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final apptextTheme = Theme.of(context).textTheme;
-
     return Scaffold(
       appBar: AppBar(title: const Text("Enter OTP Code"), centerTitle: true),
       body: Center(
@@ -39,78 +34,35 @@ class OtpScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                "Code has been sent to your email.",
-                style: apptextTheme.bodyLarge,
+              const Text(
+                "Enter 4-digit OTP",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8.h),
+              const SizedBox(height: 20),
               Pinput(
                 controller: otpController,
-                length: 6,
-                defaultPinTheme: defaultPinTheme,
-                focusedPinTheme: defaultPinTheme.copyWith(
+                focusNode: otpFocusNode,
+                length: 4,
+                defaultPinTheme: PinTheme(
+                  width: 56,
+                  height: 56,
+                  textStyle: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.blue),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-              ),
-              SizedBox(height: 8.h),
-              CustomButton(
-
-                text: otpController.isLoading ? "Verifying..." : "Verify",
-                onPressed:
-                    otpController.isLoading
-                        ? null
-                        : () async {
-                          bool isVerified = await otpController.verifyOTP("");
-                          if (isVerified) {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DashboardScreen(),
-                              ),
-                              (route) => false,
-                            );
-                          }
-                        },
-
-                // text: "Verify",
-                // onPressed: () {
-                //   Navigator.pushReplacement(
-                //     context,
-                //     MaterialPageRoute(builder: (context) => DashboardScreen()),
-                //   );
-                // },
-
-                text: 'Verify',
-                onPressed: () async {
-                  try {
-                    PhoneAuthCredential credential =
-                        PhoneAuthProvider.credential(
-                          verificationId:
-                              verficationId, // Fix: Directly use verficationId
-                          smsCode: otpController.text.trim(),
-                        );
-
-                    // Sign in the user
-                    await FirebaseAuth.instance.signInWithCredential(
-                      credential,
-                    );
-
-                    // Navigate to Dashboard
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DashboardScreen(),
-                      ),
-                    );
-                  } catch (ex) {
-                    print("Error: $ex");
+                onTap: () {
+                  if (otpController.text.isEmpty) {
+                    otpController.text = "1234";
                   }
                 },
-
               ),
+              const SizedBox(height: 30),
+              CustomButton(text: 'Verify', onPressed: () => verifyOtp(context)),
             ],
           ),
         ),

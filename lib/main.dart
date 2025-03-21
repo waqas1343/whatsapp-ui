@@ -5,6 +5,7 @@ import 'package:medichat/core/utils/text_theme/text_theme.dart';
 import 'package:medichat/firebase_options.dart';
 import 'package:medichat/providers/multiapp_providers/multiapp_providers.dart';
 import 'package:medichat/screens/auth/welcome_screen/welcome_screen.dart';
+import 'package:medichat/screens/home/whatsapp_dashboard_screen/dashboard_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
