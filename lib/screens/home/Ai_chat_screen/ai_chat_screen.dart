@@ -5,10 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:medichat/providers/controllers/ai_chat_provider/ai_chat_provider.dart';
 import 'package:sizer/sizer.dart';
 
-class AiChatScreen extends StatelessWidget {
+class AiMedicineChatScreen extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
 
-  AiChatScreen({super.key});
+  AiMedicineChatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class AiChatScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
         ),
         title: Text(
-          "Medi AI Chat",
+          "Medicine Information",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
         ),
         centerTitle: true,
