@@ -26,7 +26,7 @@ class AiChatScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
         ),
         title: Text(
-          "Created By WAQAS",
+          "Medi AI Chat",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
         ),
         centerTitle: true,
