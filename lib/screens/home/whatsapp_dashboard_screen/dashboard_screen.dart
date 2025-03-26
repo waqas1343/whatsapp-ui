@@ -5,6 +5,7 @@ import 'package:medichat/screens/home/whatsapp_tabs/group_tabbarview_screen/grou
 import 'package:medichat/widgets/custom_appbar_widget/appbar_widget.dart';
 
 import '../Ai_chat_screen/ai_chat_screen.dart';
+import '../whatsapp_tabs/e-commerce_screen/e_commerce_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -12,7 +13,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: CustomAppBar(),
         body: TabBarView(
@@ -21,13 +22,14 @@ class DashboardScreen extends StatelessWidget {
             Center(child: GroupTabBarView()),
 
             Center(child: CallTabBarView()),
+            Center(child: ECommerceScreen()),
           ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => AiChatScreen()),
+              MaterialPageRoute(builder: (context) => AiMedicineChatScreen()),
             );
           },
           backgroundColor: Colors.green,

@@ -10,6 +10,8 @@ import 'package:medichat/screens/home/custom_ai_chat_screen/custom_ai_chat_scree
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import 'screens/home/whatsapp_dashboard_screen/dashboard_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.system,
-            home: WelcomeScreen(),
+            home: DashboardScreen(),
           ),
         );
       },
