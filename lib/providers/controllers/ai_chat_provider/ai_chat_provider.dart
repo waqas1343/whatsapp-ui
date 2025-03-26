@@ -1,25 +1,42 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class ChatProvider extends ChangeNotifier {
   final List<Map<String, String>> _messages = [];
-  final String apiKey = "YOUR_API_KEY"; // Secure this key properly
   String? lastMedicineQueried;
+  int? lastRequestedQuantity;
 
   List<Map<String, String>> get messages => List.unmodifiable(_messages);
 
   Future<void> sendMessage(String message) async {
     _addMessage("user", message);
-
     String lowerMessage = message.toLowerCase().trim();
-    print("User entered: $lowerMessage");
+
+    if (lastMedicineQueried != null && lastRequestedQuantity == null) {
+      int? quantity = int.tryParse(lowerMessage);
+      if (quantity != null && quantity > 0) {
+        lastRequestedQuantity = quantity;
+        double totalPrice = await calculateTotalPrice(
+          lastMedicineQueried!,
+          quantity,
+        );
+        _addMessage(
+          "bot",
+          "Aapke order ka total price Rs. $totalPrice banta hai. Kya aap confirm karna chahenge? (yes/no)",
+        );
+        return;
+      } else {
+        _addMessage("bot", "Kripya ek valid quantity likhein.");
+        return;
+      }
+    }
 
     if (lastMedicineQueried != null &&
+        lastRequestedQuantity != null &&
         (lowerMessage == "yes" || lowerMessage == "haan")) {
-      await placeOrder(lastMedicineQueried!);
+      await placeOrder(lastMedicineQueried!, lastRequestedQuantity!);
       lastMedicineQueried = null;
+      lastRequestedQuantity = null;
       return;
     }
 
@@ -29,20 +46,18 @@ class ChatProvider extends ChangeNotifier {
         medicinesAndCategories["categories"] ?? [];
 
     if (availableMedicines.contains(lowerMessage)) {
-      print("Detected as medicine name.");
       String? medicineDetails = await getMedicineDetails(lowerMessage);
       if (medicineDetails != null) {
         lastMedicineQueried = lowerMessage;
         _addMessage(
           "bot",
-          "$medicineDetails\nKya aap isse buy karna chahenge? (yes/no)",
+          "$medicineDetails\nAap kitni quantity buy karna chahenge?",
         );
         return;
       }
     }
 
     if (availableCategories.contains(lowerMessage)) {
-      print("Detected as category name.");
       String? categoryResponse = await checkCategoryAvailability(lowerMessage);
       if (categoryResponse != null) {
         _addMessage("bot", categoryResponse);
@@ -50,48 +65,10 @@ class ChatProvider extends ChangeNotifier {
       }
     }
 
-    if (isMedicalQuery(lowerMessage)) {
-      print("Detected as medical query.");
-      await fetchAIResponse(lowerMessage);
-    } else {
-      _addMessage(
-        "bot",
-        "Maaf kijiye, mai sirf medical-related sawalon ka jawab de sakta hoon.",
-      );
-    }
-  }
-
-  Future<void> fetchAIResponse(String query) async {
-    try {
-      final response = await http.post(
-        Uri.parse(
-          "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=$apiKey",
-        ),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "contents": [
-            {
-              "role": "user",
-              "parts": [
-                {"text": query},
-              ],
-            },
-          ],
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        String reply = data["candidates"][0]["content"]["parts"][0]["text"];
-        _addMessage("bot", reply.trim());
-      } else {
-        print("API Error: ${response.body}");
-        _addMessage("bot", "❌ AI se jawab lene mein error aayi.");
-      }
-    } catch (e) {
-      print("Error fetching AI response: $e");
-      _addMessage("bot", "❌ AI response fetch karne mein error aayi.");
-    }
+    _addMessage(
+      "bot",
+      "Maaf kijiye, mai sirf medical-related sawalon ka jawab de sakta hoon. Aap kis medicine ke baare me puchna chahenge?",
+    );
   }
 
   Future<Map<String, List<String>>> fetchMedicinesAndCategories() async {
@@ -110,7 +87,6 @@ class ChatProvider extends ChangeNotifier {
 
       return {"medicines": medicines, "categories": categories.toList()};
     } catch (e) {
-      print("Error fetching medicines & categories: $e");
       return {"medicines": [], "categories": []};
     }
   }
@@ -126,32 +102,64 @@ class ChatProvider extends ChangeNotifier {
 
       if (querySnapshot.docs.isNotEmpty) {
         var doc = querySnapshot.docs.first;
-        return "\u2728 '${doc["name"]}' ke details:\n\u2022 Description: ${doc["description"] ?? "No description"}\n\u2022 Price: Rs. ${doc["price"] ?? 0}\n\u2022 Stock: ${doc["stock"] ?? 0} available";
+        return "\u2728 '${doc["name"]}' details:\n• Description: ${doc["description"] ?? "No description"}\n• Price: Rs. ${doc["price"] ?? 0}\n• Stock: ${doc["stock"] ?? 0} available";
       }
-      return "❌ '$medicineName' hamare store mein available nahi hai.";
+      return "❌ '$medicineName' store me available nahi hai.";
     } catch (e) {
-      print("Error fetching medicine details: $e");
       return "Error fetching medicine details.";
     }
   }
 
-  Future<void> placeOrder(String medicineName) async {
-    try {
-      await FirebaseFirestore.instance.collection("orders").add({
-        "medicine": medicineName,
-        "status": "pending",
-        "timestamp": FieldValue.serverTimestamp(),
-      });
-      _addMessage(
-        "bot",
-        "✅ Aapka order '$medicineName' ke liye place ho chuka hai! Jaldi hi aapko delivery details milengi.",
-      );
-    } catch (e) {
-      print("Error placing order: $e");
-      _addMessage(
-        "bot",
-        "❌ Order place karne mein error aayi. Kripya dobara koshish karein.",
-      );
+  Future<double> calculateTotalPrice(String medicineName, int quantity) async {
+    var querySnapshot =
+        await FirebaseFirestore.instance
+            .collection("products")
+            .where("name", isEqualTo: medicineName)
+            .limit(1)
+            .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      double price = querySnapshot.docs.first["price"] ?? 0;
+      return price * quantity;
+    }
+    return 0;
+  }
+
+  Future<void> placeOrder(String medicineName, int quantity) async {
+    var querySnapshot =
+        await FirebaseFirestore.instance
+            .collection("products")
+            .where("name", isEqualTo: medicineName)
+            .limit(1)
+            .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      var doc = querySnapshot.docs.first;
+      int stock = doc["stock"] ?? 0;
+
+      if (stock >= quantity) {
+        await FirebaseFirestore.instance.collection("orders").add({
+          "medicine": medicineName,
+          "quantity": quantity,
+          "status": "pending",
+          "timestamp": FieldValue.serverTimestamp(),
+        });
+
+        await FirebaseFirestore.instance
+            .collection("products")
+            .doc(doc.id)
+            .update({"stock": stock - quantity});
+
+        _addMessage(
+          "bot",
+          "✅ Aapka order '$medicineName' ($quantity units) ke liye place ho chuka hai!",
+        );
+      } else {
+        _addMessage(
+          "bot",
+          "❌ '$medicineName' ke liye sirf $stock stock available hai. Aap kam quantity select karna chahenge?",
+        );
+      }
     }
   }
 
@@ -166,39 +174,16 @@ class ChatProvider extends ChangeNotifier {
       if (querySnapshot.docs.isNotEmpty) {
         List<String> medicineList =
             querySnapshot.docs.map((doc) => doc["name"] as String).toList();
-        return "🔍 Category: '$categoryName' ke andar yeh medicines available hain:\n\n${medicineList.join(", ")}";
+        return "🔍 '$categoryName' category me yeh medicines available hain:\n${medicineList.join(", ")}";
       }
-      return "❌ '$categoryName' category ke andar koi medicine available nahi hai.";
+      return "❌ '$categoryName' category me koi medicine available nahi hai.";
     } catch (e) {
-      print("Error checking category in Firebase: $e");
       return "Error checking category availability.";
     }
   }
 
   void _addMessage(String role, String content) {
-    print("Adding Message: $role - $content");
     _messages.add({"role": role, "content": content});
     notifyListeners();
-  }
-
-  bool isMedicalQuery(String message) {
-    List<String> medicalKeywords = [
-      "medicine",
-      "tablet",
-      "doctor",
-      "pharmacy",
-      "capsule",
-      "fever",
-      "infection",
-      "pain",
-      "headache",
-      "flu",
-      "cough",
-      "cold",
-      "disease",
-      "diagnosis",
-      "treatment",
-    ];
-    return medicalKeywords.any((keyword) => message.contains(keyword));
   }
 }
