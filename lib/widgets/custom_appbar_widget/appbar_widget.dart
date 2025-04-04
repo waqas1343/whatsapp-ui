@@ -21,8 +21,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           itemBuilder: (BuildContext context) {
             return [
               PopupMenuItem(value: "New Group", child: Text("New Group")),
-              PopupMenuItem(value: "New Broadcast", child: Text("New Broadcast")),
-              PopupMenuItem(value: "Linked Devices", child: Text("Linked Devices")),
+              PopupMenuItem(
+                value: "New Broadcast",
+                child: Text("New Broadcast"),
+              ),
+              PopupMenuItem(
+                value: "Linked Devices",
+                child: Text("Linked Devices"),
+              ),
               PopupMenuItem(value: "Settings", child: Text("Settings")),
             ];
           },
@@ -37,6 +43,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Tab(text: 'CHAT'),
           Tab(text: 'GROUPS'),
           Tab(text: 'CALLS'),
+          Tab(text: 'E-COMMERCE'),
         ],
       ),
     );
