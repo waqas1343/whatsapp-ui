@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class ChatProvider extends ChangeNotifier {
   final List<Map<String, String>> _messages = [];
-  String? lastMedicineQueried;
-  int? lastRequestedQuantity;
+  String? _lastMedicineQueried;
+  int? _lastRequestedQuantity;
 
   List<Map<String, String>> get messages => List.unmodifiable(_messages);
 
@@ -12,105 +12,123 @@ class ChatProvider extends ChangeNotifier {
     _addMessage("user", message);
     String lowerMessage = message.toLowerCase().trim();
 
-    if (lastMedicineQueried != null && lastRequestedQuantity == null) {
-      int? quantity = int.tryParse(lowerMessage);
-      if (quantity != null && quantity > 0) {
-        lastRequestedQuantity = quantity;
-        double totalPrice = await calculateTotalPrice(
-          lastMedicineQueried!,
-          quantity,
-        );
-        _addMessage(
-          "bot",
-          "Aapke order ka total price Rs. $totalPrice banta hai. Kya aap confirm karna chahenge? (yes/no)",
-        );
-        return;
-      } else {
-        _addMessage("bot", "Kripya ek valid quantity likhein.");
-        return;
-      }
-    }
+    print("User Message: $lowerMessage");
 
-    if (lastMedicineQueried != null &&
-        lastRequestedQuantity != null &&
-        (lowerMessage == "yes" || lowerMessage == "haan")) {
-      await placeOrder(lastMedicineQueried!, lastRequestedQuantity!);
-      lastMedicineQueried = null;
-      lastRequestedQuantity = null;
+    if (lowerMessage == "medicine") {
+      await _showAvailableMedicines();
       return;
     }
 
-    var medicinesAndCategories = await fetchMedicinesAndCategories();
-    List<String> availableMedicines = medicinesAndCategories["medicines"] ?? [];
-    List<String> availableCategories =
-        medicinesAndCategories["categories"] ?? [];
-
-    if (availableMedicines.contains(lowerMessage)) {
-      String? medicineDetails = await getMedicineDetails(lowerMessage);
-      if (medicineDetails != null) {
-        lastMedicineQueried = lowerMessage;
-        _addMessage(
-          "bot",
-          "$medicineDetails\nAap kitni quantity buy karna chahenge?",
-        );
-        return;
-      }
+    if (await _handleMedicineSelection(lowerMessage)) {
+      return;
     }
 
-    if (availableCategories.contains(lowerMessage)) {
-      String? categoryResponse = await checkCategoryAvailability(lowerMessage);
-      if (categoryResponse != null) {
-        _addMessage("bot", categoryResponse);
-        return;
-      }
+    if (_lastMedicineQueried != null && _lastRequestedQuantity == null) {
+      await _handleQuantitySelection(lowerMessage);
+      return;
     }
 
-    _addMessage(
-      "bot",
-      "Maaf kijiye, mai sirf medical-related sawalon ka jawab de sakta hoon. Aap kis medicine ke baare me puchna chahenge?",
-    );
-  }
-
-  Future<Map<String, List<String>>> fetchMedicinesAndCategories() async {
-    try {
-      var querySnapshot =
-          await FirebaseFirestore.instance.collection("products").get();
-      List<String> medicines = [];
-      Set<String> categories = {};
-
-      for (var doc in querySnapshot.docs) {
-        medicines.add((doc["name"] as String).toLowerCase());
-        if (doc["category"] != null) {
-          categories.add((doc["category"] as String).toLowerCase());
-        }
-      }
-
-      return {"medicines": medicines, "categories": categories.toList()};
-    } catch (e) {
-      return {"medicines": [], "categories": []};
+    if (_lastMedicineQueried != null &&
+        _lastRequestedQuantity != null &&
+        (lowerMessage == "yes" || lowerMessage == "haan")) {
+      await _confirmOrder();
+      return;
     }
   }
 
-  Future<String?> getMedicineDetails(String medicineName) async {
-    try {
-      var querySnapshot =
-          await FirebaseFirestore.instance
-              .collection("products")
-              .where("name", isEqualTo: medicineName)
-              .limit(1)
-              .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        var doc = querySnapshot.docs.first;
-        return "\u2728 '${doc["name"]}' details:\n• Description: ${doc["description"] ?? "No description"}\n• Price: Rs. ${doc["price"] ?? 0}\n• Stock: ${doc["stock"] ?? 0} available";
-      }
-      return "❌ '$medicineName' store me available nahi hai.";
-    } catch (e) {
-      return "Error fetching medicine details.";
+  Future<void> _showAvailableMedicines() async {
+    List<String> allMedicines = await _getAllMedicines();
+    if (allMedicines.isNotEmpty) {
+      String formattedList = allMedicines
+          .asMap()
+          .entries
+          .map((entry) => "${entry.key + 1}. ${entry.value}")
+          .join("\n");
+      _addMessage(
+        "bot",
+        "🩺 Available medicines:\n$formattedList\nKripya ya to number ya medicine ka naam select karein.",
+      );
+    } else {
+      _addMessage("bot", "⚠️ Koi medicine database me available nahi hai.");
     }
   }
 
-  Future<double> calculateTotalPrice(String medicineName, int quantity) async {
+  Future<bool> _handleMedicineSelection(String input) async {
+    List<String> allMedicines = await _getAllMedicines();
+    if (allMedicines.contains(input)) {
+      return await _showMedicineDetails(input);
+    } else if (int.tryParse(input) != null) {
+      int index = int.parse(input) - 1;
+      if (index >= 0 && index < allMedicines.length) {
+        return await _showMedicineDetails(allMedicines[index]);
+      }
+    }
+    return false;
+  }
+
+  Future<bool> _showMedicineDetails(String medicineName) async {
+    _lastMedicineQueried = medicineName;
+    String? medicineDetails = await _getMedicineDetails(medicineName);
+    if (medicineDetails != null) {
+      _addMessage("bot", "$medicineDetails\nAap ki kitni quantity chahiye?");
+      return true;
+    }
+    return false;
+  }
+
+  Future<void> _handleQuantitySelection(String input) async {
+    int? quantity = int.tryParse(input);
+    if (quantity != null && quantity > 0) {
+      _lastRequestedQuantity = quantity;
+      double totalPrice = await _calculateTotalPrice(
+        _lastMedicineQueried!,
+        quantity,
+      );
+      _addMessage(
+        "bot",
+        "Aapke order me $quantity items hain. Total price: Rs. $totalPrice. Kya aap confirm karna chahenge? (yes/no)",
+      );
+    } else {
+      _addMessage("bot", "❌ Kripya ek valid quantity likhein.");
+    }
+  }
+
+  Future<void> _confirmOrder() async {
+    await _placeOrder(_lastMedicineQueried!, _lastRequestedQuantity!);
+    _lastMedicineQueried = null;
+    _lastRequestedQuantity = null;
+  }
+
+  Future<List<String>> _getAllMedicines() async {
+    var querySnapshot =
+        await FirebaseFirestore.instance.collection("products").get();
+    return querySnapshot.docs.map((doc) => doc["name"].toString()).toList();
+  }
+
+  Future<String?> _getMedicineDetails(String medicineName) async {
+    var querySnapshot =
+        await FirebaseFirestore.instance
+            .collection("products")
+            .where("name", isEqualTo: medicineName)
+            .limit(1)
+            .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      var doc = querySnapshot.docs.first;
+      String description = doc["description"] ?? "No description available.";
+      String dosage = doc["dosage"] ?? "No dosage information available.";
+      double price = doc["price"] ?? 0.0;
+      int stock = doc["stock"] ?? 0;
+      return "🩺 '$medicineName' ke details:\n"
+          "• Description: $description\n"
+          "• Dosage: $dosage\n"
+          "• Price: Rs. $price\n"
+          "• Stock: $stock available";
+    }
+    return null;
+  }
+
+  Future<double> _calculateTotalPrice(String medicineName, int quantity) async {
     var querySnapshot =
         await FirebaseFirestore.instance
             .collection("products")
@@ -125,7 +143,7 @@ class ChatProvider extends ChangeNotifier {
     return 0;
   }
 
-  Future<void> placeOrder(String medicineName, int quantity) async {
+  Future<void> _placeOrder(String medicineName, int quantity) async {
     var querySnapshot =
         await FirebaseFirestore.instance
             .collection("products")
@@ -160,25 +178,6 @@ class ChatProvider extends ChangeNotifier {
           "❌ '$medicineName' ke liye sirf $stock stock available hai. Aap kam quantity select karna chahenge?",
         );
       }
-    }
-  }
-
-  Future<String?> checkCategoryAvailability(String categoryName) async {
-    try {
-      var querySnapshot =
-          await FirebaseFirestore.instance
-              .collection("products")
-              .where("category", isEqualTo: categoryName)
-              .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        List<String> medicineList =
-            querySnapshot.docs.map((doc) => doc["name"] as String).toList();
-        return "🔍 '$categoryName' category me yeh medicines available hain:\n${medicineList.join(", ")}";
-      }
-      return "❌ '$categoryName' category me koi medicine available nahi hai.";
-    } catch (e) {
-      return "Error checking category availability.";
     }
   }
 

@@ -19,7 +19,6 @@ class DashboardScreen extends StatelessWidget {
           children: [
             Center(child: ChatTabBarView()),
             Center(child: GroupTabBarView()),
-
             Center(child: CallTabBarView()),
           ],
         ),
