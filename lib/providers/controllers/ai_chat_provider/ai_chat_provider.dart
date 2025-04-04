@@ -20,19 +20,19 @@ class ChatProvider extends ChangeNotifier {
 
   Future<void> sendMessage(String message) async {
     if (message.trim().isEmpty) return;
-
     _addMessage("user", message);
     String input = message.toLowerCase().trim();
 
-    print("User Input: $input | Current State: $_currentState");
-
     switch (_currentState) {
       case ChatState.idle:
-        if (input == "medicine" || input == "medicines") {
+        if (input.contains("medicine")) {
           await _showAvailableMedicines();
           _currentState = ChatState.selectingMedicine;
         } else {
-          _addMessage("bot", "👋 Namaste! 'medicine' likhkar shuru karein!");
+          _addMessage(
+            "bot",
+            "👋 Salam! 'medicine' likh kar dawaon ki list hasil karein.",
+          );
         }
         break;
 
@@ -53,10 +53,7 @@ class ChatProvider extends ChangeNotifier {
           await _askPaymentMethod();
           _currentState = ChatState.selectingPayment;
         } else {
-          _addMessage(
-            "bot",
-            "🛑 Order cancel kar diya gaya. Dobara shuru karein!",
-          );
+          _addMessage("bot", "🛑 Order cancel! Phir se shuru karein.");
           _resetState();
         }
         break;
@@ -70,23 +67,19 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<void> _showAvailableMedicines() async {
-    try {
-      List<String> medicines = await _getAllMedicines();
-      if (medicines.isNotEmpty) {
-        String list = medicines
-            .asMap()
-            .entries
-            .map((e) => "${e.key + 1}. ${e.value}")
-            .join("\n");
-        _addMessage(
-          "bot",
-          "🩺 Available medicines:\n$list\nKripya number ya naam chunein!",
-        );
-      } else {
-        _addMessage("bot", "😔 Koi medicine available nahi hai.");
-      }
-    } catch (e) {
-      _addMessage("bot", "⚠️ Medicines fetch karne mein problem: $e");
+    List<String> medicines = await _getAllMedicines();
+    if (medicines.isNotEmpty) {
+      String list = medicines
+          .asMap()
+          .entries
+          .map((e) => "${e.key + 1}. ${e.value}")
+          .join("\n");
+      _addMessage(
+        "bot",
+        "🩺 Mojood dawaian:\n$list\nKoi aik number ya naam likhein!",
+      );
+    } else {
+      _addMessage("bot", "😔 Koi dawa mojood nahi hai.");
     }
   }
 
@@ -107,13 +100,13 @@ class ChatProvider extends ChangeNotifier {
       _selectedMedicine = selected;
       String? details = await _getMedicineDetails(selected);
       if (details != null) {
-        _addMessage("bot", "$details\nKitni quantity chahiye?");
+        _addMessage("bot", "$details\nAap ko kitni quantity chahiye?");
         return true;
       } else {
         _addMessage("bot", "❌ '$selected' ka data nahi mila.");
       }
     } else {
-      _addMessage("bot", "❓ Sahi number ya naam chunein!");
+      _addMessage("bot", "❓ Sahi number ya naam likhein!");
     }
     return false;
   }
@@ -128,11 +121,11 @@ class ChatProvider extends ChangeNotifier {
       );
       _addMessage(
         "bot",
-        "📦 $quantity $_selectedMedicine ka total: Rs. $totalPrice\nConfirm karein? (yes/no)",
+        "📦 $quantity $_selectedMedicine ka total: Rs. $totalPrice\nKya aap confirm karte hain? (yes/no)",
       );
       return true;
     } else {
-      _addMessage("bot", "❌ Valid quantity daliye (e.g., 1, 2, 3)!");
+      _addMessage("bot", "❌ Sahi quantity likhein (e.g., 1, 2, 3)!");
       return false;
     }
   }
@@ -140,7 +133,7 @@ class ChatProvider extends ChangeNotifier {
   Future<void> _askPaymentMethod() async {
     _addMessage(
       "bot",
-      "💰 Payment ka tareeka chunein:\n1. JazzCash\n2. EasyPaisa\n3. Banking\n(jazzcash/easypaisa/banking likhein)",
+      "💰 Payment ka tareeqa chunein:\n1. JazzCash\n2. EasyPaisa\n3. Banking\n(jazzcash/easypaisa/banking likhein)",
     );
   }
 
@@ -149,11 +142,11 @@ class ChatProvider extends ChangeNotifier {
       await _placeOrder(_selectedMedicine!, _selectedQuantity!, input);
       _addMessage(
         "bot",
-        "🎉 Order placed successfully! ($_selectedMedicine, $_selectedQuantity units via $input)",
+        "🎉 Order place ho gaya! ($_selectedMedicine, $_selectedQuantity via $input)",
       );
       return true;
     } else {
-      _addMessage("bot", "❌ Valid payment method choose karein!");
+      _addMessage("bot", "❌ Valid payment method likhein!");
       return false;
     }
   }
@@ -173,7 +166,7 @@ class ChatProvider extends ChangeNotifier {
             .get();
     if (snapshot.docs.isNotEmpty) {
       var doc = snapshot.docs.first;
-      return "💊 $medicineName:\n• Description: ${doc["description"] ?? "N/A"}\n• Dosage: ${doc["dosage"] ?? "N/A"}\n• Price: Rs. ${(doc["price"] as num?)?.toDouble() ?? 0.0}\n• Stock: ${(doc["stock"] as num?)?.toInt() ?? 0}";
+      return "💊 $medicineName:\n• Tafseel: ${doc["description"] ?? "N/A"}\n• Dosage: ${doc["dosage"] ?? "N/A"}\n• Price: Rs. ${(doc["price"] as num?)?.toDouble() ?? 0.0}\n• Stock: ${(doc["stock"] as num?)?.toInt() ?? 0}";
     }
     return null;
   }
