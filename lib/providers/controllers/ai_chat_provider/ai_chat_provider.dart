@@ -11,9 +11,14 @@ enum ChatState {
 
 class ChatProvider extends ChangeNotifier {
   final List<Map<String, String>> _messages = [];
+
+  String? _lastMedicineQueried;
+  int? _lastRequestedQuantity;
+
   ChatState _currentState = ChatState.idle;
   String? _selectedMedicine;
   int? _selectedQuantity;
+
 
   List<Map<String, String>> get messages => List.unmodifiable(_messages);
   ChatState get currentState => _currentState;
@@ -23,6 +28,17 @@ class ChatProvider extends ChangeNotifier {
 
     _addMessage("user", message);
     String input = message.toLowerCase().trim();
+
+
+    print("User Message: $lowerMessage");
+
+    if (lowerMessage == "medicine") {
+      await _showAvailableMedicines();
+      return;
+    }
+
+    if (await _handleMedicineSelection(lowerMessage)) {
+      return;
 
     print("User Input: $input | Current State: $_currentState");
 
@@ -89,8 +105,49 @@ class ChatProvider extends ChangeNotifier {
       }
     } catch (e) {
       _addMessage("bot", "⚠️ Medicines fetch karne mein problem: $e");
+
     }
   }
+
+
+    if (_lastMedicineQueried != null && _lastRequestedQuantity == null) {
+      await _handleQuantitySelection(lowerMessage);
+      return;
+    }
+
+    if (_lastMedicineQueried != null &&
+        _lastRequestedQuantity != null &&
+        (lowerMessage == "yes" || lowerMessage == "haan")) {
+      await _confirmOrder();
+      return;
+    }
+  }
+
+  Future<void> _showAvailableMedicines() async {
+    List<String> allMedicines = await _getAllMedicines();
+    if (allMedicines.isNotEmpty) {
+      String formattedList = allMedicines
+          .asMap()
+          .entries
+          .map((entry) => "${entry.key + 1}. ${entry.value}")
+          .join("\n");
+      _addMessage(
+        "bot",
+        "🩺 Available medicines:\n$formattedList\nKripya ya to number ya medicine ka naam select karein.",
+      );
+    } else {
+      _addMessage("bot", "⚠️ Koi medicine database me available nahi hai.");
+    }
+  }
+
+  Future<bool> _handleMedicineSelection(String input) async {
+    List<String> allMedicines = await _getAllMedicines();
+    if (allMedicines.contains(input)) {
+      return await _showMedicineDetails(input);
+    } else if (int.tryParse(input) != null) {
+      int index = int.parse(input) - 1;
+      if (index >= 0 && index < allMedicines.length) {
+        return await _showMedicineDetails(allMedicines[index]);
 
   Future<bool> _handleMedicineSelection(String input) async {
     try {
@@ -117,12 +174,59 @@ class ChatProvider extends ChangeNotifier {
         }
       } else {
         _addMessage("bot", "❓ Sahi number ya naam chunein!");
+
       }
       return false;
     } catch (e) {
       _addMessage("bot", "⚠️ Error: $e");
       return false;
     }
+
+    return false;
+  }
+
+  Future<bool> _showMedicineDetails(String medicineName) async {
+    _lastMedicineQueried = medicineName;
+    String? medicineDetails = await _getMedicineDetails(medicineName);
+    if (medicineDetails != null) {
+      _addMessage("bot", "$medicineDetails\nAap ki kitni quantity chahiye?");
+      return true;
+    }
+    return false;
+  }
+
+  Future<void> _handleQuantitySelection(String input) async {
+    int? quantity = int.tryParse(input);
+    if (quantity != null && quantity > 0) {
+      _lastRequestedQuantity = quantity;
+      double totalPrice = await _calculateTotalPrice(
+        _lastMedicineQueried!,
+        quantity,
+      );
+      _addMessage(
+        "bot",
+        "Aapke order me $quantity items hain. Total price: Rs. $totalPrice. Kya aap confirm karna chahenge? (yes/no)",
+      );
+    } else {
+      _addMessage("bot", "❌ Kripya ek valid quantity likhein.");
+    }
+  }
+
+  Future<void> _confirmOrder() async {
+    await _placeOrder(_lastMedicineQueried!, _lastRequestedQuantity!);
+    _lastMedicineQueried = null;
+    _lastRequestedQuantity = null;
+  }
+
+  Future<List<String>> _getAllMedicines() async {
+    var querySnapshot =
+        await FirebaseFirestore.instance.collection("products").get();
+    return querySnapshot.docs.map((doc) => doc["name"].toString()).toList();
+  }
+
+  Future<String?> _getMedicineDetails(String medicineName) async {
+    var querySnapshot =
+
   }
 
   Future<bool> _handleQuantitySelection(String input) async {
@@ -183,11 +287,25 @@ class ChatProvider extends ChangeNotifier {
 
   Future<String?> _getMedicineDetails(String medicineName) async {
     var snapshot =
+
         await FirebaseFirestore.instance
             .collection("products")
             .where("name", isEqualTo: medicineName)
             .limit(1)
             .get();
+
+
+    if (querySnapshot.docs.isNotEmpty) {
+      var doc = querySnapshot.docs.first;
+      String description = doc["description"] ?? "No description available.";
+      String dosage = doc["dosage"] ?? "No dosage information available.";
+      double price = doc["price"] ?? 0.0;
+      int stock = doc["stock"] ?? 0;
+      return "🩺 '$medicineName' ke details:\n"
+          "• Description: $description\n"
+          "• Dosage: $dosage\n"
+          "• Price: Rs. $price\n"
+          "• Stock: $stock available";
 
     if (snapshot.docs.isNotEmpty) {
       var doc = snapshot.docs.first;
@@ -196,12 +314,17 @@ class ChatProvider extends ChangeNotifier {
           "• Dosage: ${doc["dosage"] ?? "N/A"}\n"
           "• Price: Rs. ${(doc["price"] as num?)?.toDouble() ?? 0.0}\n"
           "• Stock: ${(doc["stock"] as num?)?.toInt() ?? 0}";
+
     }
     return null;
   }
 
   Future<double> _calculateTotalPrice(String medicineName, int quantity) async {
+
+    var querySnapshot =
+
     var snapshot =
+
         await FirebaseFirestore.instance
             .collection("products")
             .where("name", isEqualTo: medicineName)
@@ -215,12 +338,17 @@ class ChatProvider extends ChangeNotifier {
     return 0.0;
   }
 
+
+  Future<void> _placeOrder(String medicineName, int quantity) async {
+    var querySnapshot =
+
   Future<void> _placeOrder(
     String medicineName,
     int quantity,
     String paymentMethod,
   ) async {
     var snapshot =
+
         await FirebaseFirestore.instance
             .collection("products")
             .where("name", isEqualTo: medicineName)
@@ -247,8 +375,11 @@ class ChatProvider extends ChangeNotifier {
         );
         throw Exception("Insufficient stock");
       }
+
+
     } else {
       throw Exception("Medicine not found");
+
     }
   }
 
