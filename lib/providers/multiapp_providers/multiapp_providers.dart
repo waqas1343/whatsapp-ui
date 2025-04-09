@@ -1,5 +1,6 @@
-import 'package:medichat/providers/controllers/ai_chat_provider/ai_chat_provider.dart';
+import 'package:medichat/providers/controllers/ai_chat_provider/medical_ai_chat_provider.dart';
 import 'package:medichat/providers/controllers/chat_provider/chat_provider.dart';
+import 'package:medichat/providers/controllers/clothing_provider/clothing_provider.dart';
 
 import 'package:medichat/providers/controllers/validation/validation.dart';
 import 'package:provider/provider.dart';
@@ -20,5 +21,8 @@ final List<ChangeNotifierProvider> multiAppProvider = [
 
   ChangeNotifierProvider<PersonalChatProvider>(
     create: (context) => PersonalChatProvider(),
+  ),
+  ChangeNotifierProvider<ClothingChatProvider>(
+    create: (context) => ClothingChatProvider(),
   ),
 ];

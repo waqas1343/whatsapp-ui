@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:medichat/core/utils/color_utils/app_colors.dart';
+import 'package:medichat/providers/controllers/clothing_provider/clothing_provider.dart';
 import 'package:medichat/screens/home/whatsapp_dashboard_screen/dashboard_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:medichat/providers/controllers/ai_chat_provider/ai_chat_provider.dart';
+import 'package:medichat/providers/controllers/ai_chat_provider/medical_ai_chat_provider.dart';
 import 'package:sizer/sizer.dart';
 
-class AiMedicineChatScreen extends StatelessWidget {
+class AiClothingScreen extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
 
-  AiMedicineChatScreen({super.key});
+  AiClothingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final chatProvider = Provider.of<ChatProvider>(context);
+    final chatProvider = Provider.of<ClothingChatProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -26,7 +27,7 @@ class AiMedicineChatScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
         ),
         title: Text(
-          "Medicine Information",
+          "Clothing store",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
         ),
         centerTitle: true,

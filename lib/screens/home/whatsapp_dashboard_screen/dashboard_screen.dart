@@ -4,7 +4,7 @@ import 'package:medichat/screens/home/whatsapp_tabs/chat_tabbarview_screen/chat_
 import 'package:medichat/screens/home/whatsapp_tabs/group_tabbarview_screen/group_tab_bar_view.dart';
 import 'package:medichat/widgets/custom_appbar_widget/appbar_widget.dart';
 
-import '../Ai_chat_screen/ai_chat_screen.dart';
+import '../Ai_chat_screen/ai_medical_chat_screen.dart';
 import '../whatsapp_tabs/e-commerce_screen/e_commerce_screen.dart';
 
 class DashboardScreen extends StatelessWidget {

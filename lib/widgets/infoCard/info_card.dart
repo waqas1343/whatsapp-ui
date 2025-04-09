@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medichat/screens/home/Ai_chat_screen/ai_chat_screen.dart';
 import 'package:sizer/sizer.dart';
 
 class InfoCard extends StatelessWidget {
@@ -53,20 +52,17 @@ class InfoCard extends StatelessWidget {
                 ),
                 SizedBox(height: 1.h),
 
-                Container(
-                  // width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: onTap,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[900],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                ElevatedButton(
+                  onPressed: onTap,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[900],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text(
-                      "Let's talk",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                  ),
+                  child: Text(
+                    "Let's talk",
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ],
