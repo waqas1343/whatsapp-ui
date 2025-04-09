@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
+import 'package:medichat/screens/home/ai_clothing_screen/ai_clothing_screen.dart';
 
 import '../../../../widgets/infoCard/info_card.dart';
-import '../../Ai_chat_screen/ai_chat_screen.dart';
+import '../../Ai_chat_screen/ai_medical_chat_screen.dart';
 
 class ECommerceScreen extends StatelessWidget {
   const ECommerceScreen({super.key});
@@ -33,7 +33,14 @@ class ECommerceScreen extends StatelessWidget {
                     description: 'you can get more info about clothes',
                     title: 'Clothes',
                     icon: Icons.shopping_bag,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AiClothingScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

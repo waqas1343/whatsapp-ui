@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 
 enum ChatState {
   idle,
-  selectingMedicine,
+  selectingClothing,
   selectingQuantity,
   confirmingOrder,
   selectingPayment,
 }
 
-class ChatProvider extends ChangeNotifier {
+class ClothingChatProvider extends ChangeNotifier {
   final List<Map<String, String>> _messages = [];
   ChatState _currentState = ChatState.idle;
-  String? _selectedMedicine;
+  String? _selectedClothing;
   int? _selectedQuantity;
 
   List<Map<String, String>> get messages => List.unmodifiable(_messages);
@@ -25,19 +25,19 @@ class ChatProvider extends ChangeNotifier {
 
     switch (_currentState) {
       case ChatState.idle:
-        if (input.contains("medicine")) {
-          await _showAvailableMedicines();
-          _currentState = ChatState.selectingMedicine;
+        if (input.contains("clothing")) {
+          await _showAvailableClothings();
+          _currentState = ChatState.selectingClothing;
         } else {
           _addMessage(
             "bot",
-            "👋 Salam! 'medicine' likh kar dawaon ki list hasil karein.",
+            "👋 Salam! 'clothing' likh kar kapron ki list hasil karein.",
           );
         }
         break;
 
-      case ChatState.selectingMedicine:
-        if (await _handleMedicineSelection(input)) {
+      case ChatState.selectingClothing:
+        if (await _handleClothingSelection(input)) {
           _currentState = ChatState.selectingQuantity;
         }
         break;
@@ -66,39 +66,39 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> _showAvailableMedicines() async {
-    List<String> medicines = await _getAllMedicines();
-    if (medicines.isNotEmpty) {
-      String list = medicines
+  Future<void> _showAvailableClothings() async {
+    List<String> clothings = await _getAllClothings();
+    if (clothings.isNotEmpty) {
+      String list = clothings
           .asMap()
           .entries
           .map((e) => "${e.key + 1}. ${e.value}")
           .join("\n");
       _addMessage(
         "bot",
-        "🩺 Mojood dawaian:\n$list\nKoi aik number ya naam likhein!",
+        "👕 Mojood kapray:\n$list\nKoi aik number ya naam likhein!",
       );
     } else {
-      _addMessage("bot", "😔 Koi dawa mojood nahi hai.");
+      _addMessage("bot", "😔 Koi kapra mojood nahi hai.");
     }
   }
 
-  Future<bool> _handleMedicineSelection(String input) async {
-    List<String> medicines = await _getAllMedicines();
+  Future<bool> _handleClothingSelection(String input) async {
+    List<String> clothings = await _getAllClothings();
     String? selected;
 
-    if (medicines.contains(input)) {
+    if (clothings.contains(input)) {
       selected = input;
     } else if (int.tryParse(input) != null) {
       int index = int.parse(input) - 1;
-      if (index >= 0 && index < medicines.length) {
-        selected = medicines[index];
+      if (index >= 0 && index < clothings.length) {
+        selected = clothings[index];
       }
     }
 
     if (selected != null) {
-      _selectedMedicine = selected;
-      String? details = await _getMedicineDetails(selected);
+      _selectedClothing = selected;
+      String? details = await _getClothingDetails(selected);
       if (details != null) {
         _addMessage("bot", "$details\nAap ko kitni quantity chahiye?");
         return true;
@@ -116,12 +116,12 @@ class ChatProvider extends ChangeNotifier {
     if (quantity != null && quantity > 0) {
       _selectedQuantity = quantity;
       double totalPrice = await _calculateTotalPrice(
-        _selectedMedicine!,
+        _selectedClothing!,
         quantity,
       );
       _addMessage(
         "bot",
-        "📦 $quantity $_selectedMedicine ka total: Rs. $totalPrice\nKya aap confirm karte hain? (yes/no)",
+        "📦 $quantity $_selectedClothing ka total: Rs. $totalPrice\nKya aap confirm karte hain? (yes/no)",
       );
       return true;
     } else {
@@ -139,10 +139,10 @@ class ChatProvider extends ChangeNotifier {
 
   Future<bool> _handlePaymentSelection(String input) async {
     if (["jazzcash", "easypaisa", "banking"].contains(input)) {
-      await _placeOrder(_selectedMedicine!, _selectedQuantity!, input);
+      await _placeOrder(_selectedClothing!, _selectedQuantity!, input);
       _addMessage(
         "bot",
-        "🎉 Order place ho gaya! ($_selectedMedicine, $_selectedQuantity via $input)",
+        "🎉 Order place ho gaya! ($_selectedClothing, $_selectedQuantity via $input)",
       );
       return true;
     } else {
@@ -151,47 +151,61 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<String>> _getAllMedicines() async {
-    var snapshot =
-        await FirebaseFirestore.instance.collection("products").get();
-    return snapshot.docs.map((doc) => doc["name"] as String).toList();
+  Future<List<String>> _getAllClothings() async {
+    try {
+      var snapshot =
+          await FirebaseFirestore.instance.collection("clothing").get();
+      return snapshot.docs.map((doc) => doc["name"] as String).toList();
+    } catch (e) {
+      debugPrint("Error fetching clothings: $e");
+      return [];
+    }
   }
 
-  Future<String?> _getMedicineDetails(String medicineName) async {
-    var snapshot =
-        await FirebaseFirestore.instance
-            .collection("products")
-            .where("name", isEqualTo: medicineName)
-            .limit(1)
-            .get();
-    if (snapshot.docs.isNotEmpty) {
-      var doc = snapshot.docs.first;
-      return "💊 $medicineName:\n• Tafseel: ${doc["description"] ?? "N/A"}\n• Dosage: ${doc["dosage"] ?? "N/A"}\n• Price: Rs. ${(doc["price"] as num?)?.toDouble() ?? 0.0}\n• Stock: ${(doc["stock"] as num?)?.toInt() ?? 0}";
+  Future<String?> _getClothingDetails(String clothingName) async {
+    try {
+      var snapshot =
+          await FirebaseFirestore.instance
+              .collection("clothing")
+              .where("name", isEqualTo: clothingName)
+              .limit(1)
+              .get();
+      if (snapshot.docs.isNotEmpty) {
+        var doc = snapshot.docs.first;
+        return "👗 $clothingName:\n• Tafseel: ${doc["description"] ?? "N/A"}\n• Size: ${doc["size"] ?? "N/A"}\n• Price: Rs. ${(doc["price"] as num?)?.toDouble() ?? 0.0}\n• Stock: ${(doc["stock"] as num?)?.toInt() ?? 0}";
+      }
+    } catch (e) {
+      debugPrint("Error fetching clothing details: $e");
     }
     return null;
   }
 
-  Future<double> _calculateTotalPrice(String medicineName, int quantity) async {
-    var snapshot =
-        await FirebaseFirestore.instance
-            .collection("products")
-            .where("name", isEqualTo: medicineName)
-            .limit(1)
-            .get();
-    if (snapshot.docs.isNotEmpty) {
-      double price = (snapshot.docs.first["price"] as num?)?.toDouble() ?? 0.0;
-      return price * quantity;
+  Future<double> _calculateTotalPrice(String clothingName, int quantity) async {
+    try {
+      var snapshot =
+          await FirebaseFirestore.instance
+              .collection("clothing")
+              .where("name", isEqualTo: clothingName)
+              .limit(1)
+              .get();
+      if (snapshot.docs.isNotEmpty) {
+        double price =
+            (snapshot.docs.first["price"] as num?)?.toDouble() ?? 0.0;
+        return price * quantity;
+      }
+    } catch (e) {
+      debugPrint("Error calculating total price: $e");
     }
     return 0.0;
   }
 
   Future<void> _placeOrder(
-    String medicineName,
+    String clothingName,
     int quantity,
     String paymentMethod,
   ) async {
     await FirebaseFirestore.instance.collection("orders").add({
-      "medicine": medicineName,
+      "clothing": clothingName,
       "quantity": quantity,
       "paymentMethod": paymentMethod,
       "status": "pending",
@@ -205,7 +219,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void _resetState() {
-    _selectedMedicine = null;
+    _selectedClothing = null;
     _selectedQuantity = null;
     _currentState = ChatState.idle;
   }
