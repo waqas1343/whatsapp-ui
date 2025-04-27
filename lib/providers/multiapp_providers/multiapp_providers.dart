@@ -4,6 +4,7 @@ import 'package:medichat/providers/controllers/clothing_provider/clothing_provid
 
 import 'package:medichat/providers/controllers/validation/validation.dart';
 import 'package:provider/provider.dart';
+import '../controllers/image_picker/image_pickerController.dart';
 import '../controllers/personalChat/personal_chat_provider.dart';
 
 final List<ChangeNotifierProvider> multiAppProvider = [
@@ -24,5 +25,8 @@ final List<ChangeNotifierProvider> multiAppProvider = [
   ),
   ChangeNotifierProvider<ClothingChatProvider>(
     create: (context) => ClothingChatProvider(),
+  ),
+  ChangeNotifierProvider<ProfileProvider>(
+    create: (context) => ProfileProvider(),
   ),
 ];

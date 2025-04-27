@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:medichat/core/utils/text_theme/text_theme.dart';
 import 'package:medichat/firebase_options.dart';
 import 'package:medichat/providers/multiapp_providers/multiapp_providers.dart';
+import 'package:medichat/screens/auth/welcome_screen/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.system,
-            home: DashboardScreen(),
+            home: WelcomeScreen(),
           ),
         );
       },
