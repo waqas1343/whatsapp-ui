@@ -24,16 +24,7 @@ class DashboardScreen extends StatelessWidget {
             Center(child: ECommerceScreen()),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => AiMedicineChatScreen()),
-            );
-          },
-          backgroundColor: Colors.green,
-          child: Icon(Icons.message),
-        ),
+        
       ),
     );
   }

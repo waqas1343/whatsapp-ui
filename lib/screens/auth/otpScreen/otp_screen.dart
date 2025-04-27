@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
+import 'package:provider/provider.dart';
 import '../../../core/utils/color_utils/app_colors.dart';
 import '../../../core/utils/custom_button/custom_button.dart';
+import '../../../providers/controllers/image_picker/image_pickerController.dart';
 import '../../home/whatsapp_dashboard_screen/dashboard_screen.dart';
 
 class OtpScreen extends StatelessWidget {
@@ -28,6 +30,7 @@ class OtpScreen extends StatelessWidget {
 
   void verifyOtp(BuildContext context) {
     if (otpController.text.trim() == '1234') {
+      Provider.of<ProfileProvider>(context, listen: false).setPhoneNumber(phoneNumber);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => DashboardScreen()),

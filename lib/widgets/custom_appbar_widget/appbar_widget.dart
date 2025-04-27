@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:medichat/core/utils/color_utils/app_colors.dart';
 
+import '../../screens/home/profile_screen/profile_screen.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
 
@@ -29,7 +31,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 value: "Linked Devices",
                 child: Text("Linked Devices"),
               ),
-              PopupMenuItem(value: "Settings", child: Text("Settings")),
+              PopupMenuItem(
+                value: "Settings",
+                child: Text("Settings"),
+                onTap:
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProfileScreen()),
+                    ),
+              ),
             ];
           },
           icon: Icon(Icons.more_vert, color: AppColors.appBackground),
